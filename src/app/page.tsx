@@ -5,14 +5,19 @@ import LiveSearch from '@/components/LiveSearch';
 import ToolCard from '@/components/ToolCard';
 import { Layers } from 'lucide-react';
 
+import db from '@/config/db';
+
 async function getTools() {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/tools`, { cache: 'no-store' });
-    if (!res.ok) return [];
-    const data = await res.json();
-    return data.data || [];
+    const { rows } = await db.query(`
+      SELECT t.id, t.name, t.slug, t.config, c.name as category_name, c.slug as category_slug
+      FROM tools t
+      LEFT JOIN categories c ON t.category_id = c.id
+      ORDER BY t.created_at DESC
+    `);
+    return rows || [];
   } catch (e) {
-    console.error(e);
+    console.error('Server Component DB Error:', e);
     return [];
   }
 }
