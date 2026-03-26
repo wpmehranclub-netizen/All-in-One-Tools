@@ -21,7 +21,7 @@ export default function LiveSearch() {
 
     const delayDebounceFn = setTimeout(() => {
       if (query.length > 1) {
-        axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/search?q=${query}`)
+        axios.get(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/search?q=${query}`)
           .then(res => {
             setResults(res.data.data);
             // Dropdown smooth fade + slide

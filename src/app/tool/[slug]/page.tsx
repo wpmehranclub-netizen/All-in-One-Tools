@@ -23,7 +23,7 @@ export default function ToolPage({ params }: { params: Promise<{ slug: string }>
     // Start animation without hardcoding opacity-0 in CSS class so React hydration doesn't fail
     gsap.from('.page-container', { opacity: 0, duration: 0.3, ease: 'power2.out' });
 
-    axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/tool/${slug}`)
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/tool/${slug}`)
       .then(res => {
         setTool(res.data.data);
         setLoadingConfig(false);
@@ -55,7 +55,7 @@ export default function ToolPage({ params }: { params: Promise<{ slug: string }>
     // Standard Backend Execution
     setLoadingExecute(true);
     try {
-      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/execute-tool`, { slug, payload });
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/execute-tool`, { slug, payload });
       setResult(res.data.data);
     } catch (err: any) {
       setError(err.response?.data?.error || err.message);
