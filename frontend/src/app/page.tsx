@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import Link from 'next/link';
 import LiveSearch from '@/components/LiveSearch';
 import ToolCard from '@/components/ToolCard';

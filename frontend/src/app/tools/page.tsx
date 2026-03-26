@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import Link from 'next/link';
 import ToolCard from '@/components/ToolCard';
 import { Layers, ArrowLeft } from 'lucide-react';
