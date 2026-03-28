@@ -44,10 +44,18 @@ export default function ToolPage({ params }: { params: Promise<{ slug: string }>
     // Smart Routing Proxy: Execute entirely in the browser if real-time
     if (tool.config.realtime && clientHandlers[slug as string]) {
       try {
-        const localResult = clientHandlers[slug as string](payload);
-        setResult(localResult);
+        const handlerResult = clientHandlers[slug as string](payload);
+        if (handlerResult instanceof Promise) {
+          setLoadingExecute(true);
+          const localResult = await handlerResult;
+          setResult(localResult);
+          setLoadingExecute(false);
+        } else {
+          setResult(handlerResult);
+        }
       } catch (err: any) {
         setError("Local DOM execution failed: " + err.message);
+        setLoadingExecute(false);
       }
       return; // Skip backend server entirely to reduce API load
     }

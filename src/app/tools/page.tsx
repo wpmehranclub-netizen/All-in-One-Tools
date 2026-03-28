@@ -4,19 +4,23 @@ import Link from 'next/link';
 import ToolCard from '@/components/ToolCard';
 import { Layers, ArrowLeft } from 'lucide-react';
 
-import db from '@/config/db';
+import { tools as toolsData, categories as categoriesData } from '@/config/toolsDB';
 
 async function getTools() {
   try {
-    const { rows } = await db.query(`
-      SELECT t.id, t.name, t.slug, t.config, c.name as category_name, c.slug as category_slug
-      FROM tools t
-      LEFT JOIN categories c ON t.category_id = c.id
-      ORDER BY t.created_at DESC
-    `);
-    return rows || [];
+    return toolsData.map(t => {
+      const category = categoriesData.find(c => c.slug === t.category_slug);
+      return {
+        id: t.slug,
+        name: t.name,
+        slug: t.slug,
+        config: t.config,
+        category_name: category ? category.name : t.category_slug,
+        category_slug: t.category_slug
+      };
+    });
   } catch (e) {
-    console.error('Server Component DB Error:', e);
+    console.error('Static Config Error:', e);
     return [];
   }
 }

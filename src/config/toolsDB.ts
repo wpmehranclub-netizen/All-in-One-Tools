@@ -1,6 +1,15 @@
-const db = require('../src/config/db');
+export const categories = [
+  { name: 'Text Tools', slug: 'text' },
+  { name: 'Image Tools', slug: 'image' },
+  { name: 'Health Calculators', slug: 'health' },
+  { name: 'Developer Tools', slug: 'developer' },
+  { name: 'Math & Logic', slug: 'math' },
+  { name: 'Finance & Money', slug: 'finance' },
+  { name: 'Date & Time', slug: 'datetime' },
+  { name: 'Converters', slug: 'converters' }
+];
 
-const tools = [
+export const tools = [
   {
     name: 'Word Counter',
     slug: 'word-counter',
@@ -255,66 +264,3 @@ const tools = [
     }
   }
 ];
-
-const categories = [
-  { name: 'Text Tools', slug: 'text' },
-  { name: 'Image Tools', slug: 'image' },
-  { name: 'Health Calculators', slug: 'health' },
-  { name: 'Developer Tools', slug: 'developer' },
-  { name: 'Math & Logic', slug: 'math' },
-  { name: 'Finance & Money', slug: 'finance' },
-  { name: 'Date & Time', slug: 'datetime' },
-  { name: 'Converters', slug: 'converters' }
-];
-
-async function init() {
-  try {
-    console.log('Dropping existing tables...');
-    await db.query(`DROP TABLE IF EXISTS tools;`);
-    await db.query(`DROP TABLE IF EXISTS categories;`);
-
-    console.log('Creating categories table...');
-    await db.query(`
-      CREATE TABLE categories (
-        id SERIAL PRIMARY KEY,
-        name VARCHAR(255) NOT NULL,
-        slug VARCHAR(255) UNIQUE NOT NULL
-      );
-    `);
-
-    console.log('Creating tools table...');
-    await db.query(`
-      CREATE TABLE tools (
-        id SERIAL PRIMARY KEY,
-        name VARCHAR(255) NOT NULL,
-        slug VARCHAR(255) UNIQUE NOT NULL,
-        category_id INTEGER REFERENCES categories(id) ON DELETE SET NULL,
-        config JSONB NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      );
-    `);
-
-    console.log('Inserting categories...');
-    for (const c of categories) {
-      await db.query(`INSERT INTO categories (name, slug) VALUES ($1, $2)`, [c.name, c.slug]);
-    }
-
-    console.log('Inserting tools...');
-    for (const t of tools) {
-      const catRes = await db.query(`SELECT id FROM categories WHERE slug = $1`, [t.category_slug]);
-      const category_id = catRes.rows[0] ? catRes.rows[0].id : null;
-      await db.query(
-        `INSERT INTO tools (name, slug, category_id, config) VALUES ($1, $2, $3, $4)`,
-         [t.name, t.slug, category_id, JSON.stringify(t.config)]
-      );
-    }
-
-    console.log('Database initialized successfully.');
-    process.exit(0);
-  } catch (err) {
-    console.error('Failed to initialize database:', err);
-    process.exit(1);
-  }
-}
-
-init();

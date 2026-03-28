@@ -1,14 +1,19 @@
 import { NextResponse } from "next/server";
-import db from "@/config/db";
+import { tools as toolsData, categories as categoriesData } from "@/config/toolsDB";
 
 export async function GET() {
   try {
-    const { rows } = await db.query(`
-      SELECT t.id, t.name, t.slug, t.config, c.name as category_name, c.slug as category_slug
-      FROM tools t
-      LEFT JOIN categories c ON t.category_id = c.id
-      ORDER BY t.created_at DESC
-    `);
+    const rows = toolsData.map(t => {
+      const category = categoriesData.find(c => c.slug === t.category_slug);
+      return {
+        id: t.slug,
+        name: t.name,
+        slug: t.slug,
+        config: t.config,
+        category_name: category ? category.name : t.category_slug,
+        category_slug: t.category_slug
+      };
+    });
     return NextResponse.json({ data: rows });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

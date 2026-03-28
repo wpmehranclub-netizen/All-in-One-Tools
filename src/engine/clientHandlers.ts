@@ -1,3 +1,5 @@
+import * as math from 'mathjs';
+
 // Client-Side Execution Engine for Real-Time Tools
 // This avoids hitting the Next.js server for basic Javascript operations
 
@@ -84,6 +86,163 @@ export const clientHandlers: Record<string, (payload: any) => any> = {
     } catch (e: any) {
       return { formatted: `Error: Invalid JSON.\n\n${e.message}` };
     }
-  }
+  },
 
+  // Basic Calculator
+  'basic-calculator': (payload: any) => {
+    const num1 = parseFloat(payload.num1);
+    const num2 = parseFloat(payload.num2);
+    const operator = payload.operator;
+
+    if (isNaN(num1) || isNaN(num2)) return { result: 'Error: Valid numbers required' };
+
+    let result = 0;
+    switch (operator) {
+      case '+': result = num1 + num2; break;
+      case '-': result = num1 - num2; break;
+      case '*': result = num1 * num2; break;
+      case '/': 
+        if (num2 === 0) return { result: 'Error: Cannot divide by zero' };
+        result = num1 / num2; 
+        break;
+      default: return { result: 'Error: Invalid operator' };
+    }
+
+    return { result };
+  },
+
+  // Scientific Calculator
+  'scientific-calculator': (payload: any) => {
+    const expression = payload.expression || '';
+    if (!expression.trim()) return { result: '', equation: '' };
+    try {
+      const result = math.evaluate(expression);
+      return { result, equation: expression };
+    } catch (e: any) {
+      return { result: 'Error: Invalid mathematical expression', equation: expression };
+    }
+  },
+
+  // Age Calculator
+  'age-calculator': (payload: any) => {
+    const dob = payload.dob;
+    if (!dob) return { Years: '', Months: '', Days: '', 'Next Birthday': '' };
+
+    const birthDate = new Date(dob);
+    const today = new Date();
+
+    if (isNaN(birthDate.getTime())) return { Years: 'Error', Months: 'Invalid Date', Days: '', 'Next Birthday': '' };
+
+    let years = today.getFullYear() - birthDate.getFullYear();
+    let months = today.getMonth() - birthDate.getMonth();
+    let days = today.getDate() - birthDate.getDate();
+
+    if (days < 0) {
+      months--;
+      const lastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+      days += lastMonth.getDate();
+    }
+
+    if (months < 0) {
+      years--;
+      months += 12;
+    }
+
+    let nextBirthday = new Date(today.getFullYear(), birthDate.getMonth(), birthDate.getDate());
+    if (today > nextBirthday) {
+      nextBirthday.setFullYear(today.getFullYear() + 1);
+    }
+    
+    const diffTime = Math.abs(nextBirthday.getTime() - today.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    return {
+      Years: years.toString(),
+      Months: months.toString(),
+      Days: days.toString(),
+      'Next Birthday': `${diffDays} days away`
+    };
+  },
+
+  // Percentage Calculator
+  'percentage-calculator': (payload: any) => {
+    const value = parseFloat(payload.value);
+    const total = parseFloat(payload.total);
+
+    if (isNaN(value) || isNaN(total)) return { Value: '', Total: '', Percentage: '' };
+    if (total === 0) return { Value: value.toString(), Total: '0', Percentage: 'Error: Divide by 0' };
+
+    const percentage = (value / total) * 100;
+    
+    return {
+      Value: value.toString(),
+      Total: total.toString(),
+      Percentage: `${percentage.toFixed(2)}%`
+    };
+  },
+
+  // Discount Calculator
+  'discount-calculator': (payload: any) => {
+    const price = parseFloat(payload.price);
+    let discountPercent = parseFloat(payload.discountPercent);
+    let taxPercent = parseFloat(payload.taxPercent || '0');
+
+    if (isNaN(price)) return { 'Original Price': '', 'Discount Amount': '', 'Tax Amount': '', 'Final Price': '' };
+    if (isNaN(discountPercent)) discountPercent = 0;
+    if (isNaN(taxPercent)) taxPercent = 0;
+
+    const discountAmount = price * (discountPercent / 100);
+    const priceAfterDiscount = price - discountAmount;
+    const taxAmount = priceAfterDiscount * (taxPercent / 100);
+    const finalPrice = priceAfterDiscount + taxAmount;
+
+    return {
+      'Original Price': `$${price.toFixed(2)}`,
+      'Discount Amount': `-$${discountAmount.toFixed(2)}`,
+      'Tax Amount': `+$${taxAmount.toFixed(2)}`,
+      'Final Price': `$${finalPrice.toFixed(2)}`
+    };
+  },
+
+  // Currency Converter
+  'currency-converter': async (payload: any) => {
+    const amount = parseFloat(payload.amount);
+    const from = payload.from?.toUpperCase() || '';
+    const to = payload.to?.toUpperCase() || '';
+
+    if (isNaN(amount) || amount <= 0) return { Error: 'Amount must be greater than 0' };
+    if (!from || !to) return { Error: 'Please provide both From and To currencies' };
+
+    if (from === to) {
+      return {
+        'Conversion': `${amount.toFixed(2)} ${from} = ${amount.toFixed(2)} ${to}`,
+        'Exchange Rate': '1.0000',
+        'Data Source': 'Frankfurter API'
+      };
+    }
+
+    try {
+      const response = await fetch(`https://api.frankfurter.app/latest?amount=${amount}&from=${from}&to=${to}`);
+      if (!response.ok) {
+        if (response.status === 404) return { Error: 'Invalid or unsupported currencies.' };
+        return { Error: 'API Error. Please try again.' };
+      }
+      const data = await response.json();
+      
+      if (data.rates && data.rates[to]) {
+        const convertedValue = data.rates[to];
+        const rate = convertedValue / amount;
+        return {
+          'Conversion': `${amount.toFixed(2)} ${from} = ${convertedValue.toFixed(2)} ${to}`,
+          'Exchange Rate': `1 ${from} = ${rate.toFixed(4)} ${to}`,
+          'As of Date': data.date,
+          'Data Source': 'Frankfurter API'
+        };
+      } else {
+        return { Error: `Currency ${to} is not supported.` };
+      }
+    } catch (e: any) {
+      return { Error: 'Network Error while connecting to Frankfurter API.' };
+    }
+  }
 };

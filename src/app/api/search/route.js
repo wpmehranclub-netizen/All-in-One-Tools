@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import db from "@/config/db";
+import { tools as toolsData } from "@/config/toolsDB";
 
 export async function GET(request) {
   try {
@@ -7,10 +7,12 @@ export async function GET(request) {
     const q = searchParams.get('q');
     if (!q) return NextResponse.json({ data: [] });
 
-    const { rows } = await db.query(
-      `SELECT name, slug FROM tools WHERE name ILIKE $1 LIMIT 10`,
-      [`%${q}%`]
-    );
+    const lowerQ = q.toLowerCase();
+    const rows = toolsData
+      .filter(t => t.name.toLowerCase().includes(lowerQ))
+      .map(t => ({ name: t.name, slug: t.slug }))
+      .slice(0, 10);
+      
     return NextResponse.json({ data: rows });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
