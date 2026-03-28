@@ -9,6 +9,9 @@ const ageCalculator = require('../handlers/ageCalculator');
 const percentageCalculator = require('../handlers/percentageCalculator');
 const discountCalculator = require('../handlers/discountCalculator');
 const currencyConverter = require('../handlers/currencyConverter');
+const bmrCalculator = require('../handlers/bmrCalculator');
+const timeZoneConverter = require('../handlers/timeZoneConverter');
+const ovulationCalculator = require('../handlers/ovulationCalculator');
 
 const handlerMap = {
   'word-counter': wordCounter,
@@ -21,7 +24,10 @@ const handlerMap = {
   'age-calculator': ageCalculator,
   'percentage-calculator': percentageCalculator,
   'discount-calculator': discountCalculator,
-  'currency-converter': currencyConverter
+  'currency-converter': currencyConverter,
+  'bmr-calculator': bmrCalculator,
+  'time-zone-converter': timeZoneConverter,
+  'ovulation-calculator': ovulationCalculator
 };
 
 module.exports = handlerMap;

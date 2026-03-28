@@ -2,10 +2,13 @@
 
 import { useEffect, useState, use } from 'react';
 import axios from 'axios';
+import ToolCard from '@/components/ToolCard';
 import UniversalInput from '@/components/UniversalInput';
 import UniversalOutput from '@/components/UniversalOutput';
+import CustomBasicCalculator from '@/components/CustomBasicCalculator';
+import CustomScientificCalculator from '@/components/CustomScientificCalculator';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Zap, Box, Code } from 'lucide-react';
 import gsap from 'gsap';
 import { clientHandlers } from '@/engine/clientHandlers';
 
@@ -114,8 +117,14 @@ export default function ToolPage({ params }: { params: Promise<{ slug: string }>
       </div>
 
       {/* Engine Injection */}
-      <div className="max-w-4xl mx-auto px-4 py-16 flex flex-col items-center relative z-10">
-        <UniversalInput config={tool.config} onSubmit={handleExecute} isLoading={loadingExecute} />
+      <div className="max-w-4xl mx-auto px-4 py-16 flex flex-col items-center relative z-10 w-full">
+        {slug === 'basic-calculator' ? (
+          <CustomBasicCalculator onSubmit={handleExecute} />
+        ) : slug === 'scientific-calculator' ? (
+          <CustomScientificCalculator onSubmit={handleExecute} />
+        ) : (
+          <UniversalInput config={tool.config} onSubmit={handleExecute} isLoading={loadingExecute} />
+        )}
         
         {tool.config.realtime && result && (
            <div className="w-full max-w-3xl mt-6 px-4 py-2 border border-[var(--color-accent)]/30 bg-[var(--color-accent)]/10 text-[var(--color-accent)] rounded-lg text-xs font-mono flex items-center">

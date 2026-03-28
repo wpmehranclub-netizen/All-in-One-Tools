@@ -244,5 +244,94 @@ export const clientHandlers: Record<string, (payload: any) => any> = {
     } catch (e: any) {
       return { Error: 'Network Error while connecting to Frankfurter API.' };
     }
+  },
+
+  // BMR Calculator
+  'bmr-calculator': (payload: any) => {
+    const age = parseFloat(payload.age);
+    const weight = parseFloat(payload.weight);
+    const height = parseFloat(payload.height);
+    const gender = payload.gender; 
+
+    if (isNaN(age) || isNaN(weight) || isNaN(height)) {
+      return { Error: 'Age, weight, and height must be valid numbers' };
+    }
+
+    let bmr = 0;
+    if (gender === 'Male') {
+      bmr = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age);
+    } else {
+      bmr = 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age);
+    }
+
+    return {
+      'BMR (Basal Metabolic Rate)': `${Math.round(bmr)} Calories/day`,
+      'Sedentary (little to no exercise)': `${Math.round(bmr * 1.2)} Calories/day`,
+      'Light exercise (1-3 days/week)': `${Math.round(bmr * 1.375)} Calories/day`,
+      'Moderate exercise (3-5 days/week)': `${Math.round(bmr * 1.55)} Calories/day`,
+      'Heavy exercise (6-7 days/week)': `${Math.round(bmr * 1.725)} Calories/day`,
+      'Very heavy exercise (twice/day)': `${Math.round(bmr * 1.9)} Calories/day`
+    };
+  },
+
+  // Ovulation Calculator
+  'ovulation-calculator': (payload: any) => {
+    const { lastPeriod, cycleLength } = payload;
+    if (!lastPeriod || !cycleLength) return { Error: 'Last period date and cycle length are required' };
+
+    const cycleDays = parseInt(cycleLength, 10);
+    if (isNaN(cycleDays) || cycleDays < 20 || cycleDays > 45) {
+      return { Error: 'Cycle length must be between 20 and 45 days' };
+    }
+
+    const lmp = new Date(lastPeriod);
+    if (isNaN(lmp.getTime())) return { Error: 'Invalid date provided' };
+
+    const nextPeriod = new Date(lmp.getTime() + cycleDays * 24 * 60 * 60 * 1000);
+    const ovulationDate = new Date(nextPeriod.getTime() - 14 * 24 * 60 * 60 * 1000);
+
+    const fertileStart = new Date(ovulationDate.getTime() - 5 * 24 * 60 * 60 * 1000);
+    const fertileEnd = new Date(ovulationDate.getTime() + 1 * 24 * 60 * 60 * 1000);
+    const pregnancyTest = new Date(nextPeriod.getTime() + 1 * 24 * 60 * 60 * 1000);
+
+    return {
+      'Estimated Ovulation': ovulationDate.toDateString(),
+      'Fertile Window': `${fertileStart.toDateString()} to ${fertileEnd.toDateString()}`,
+      'Next Expected Period': nextPeriod.toDateString(),
+      'Pregnancy Test Date': `From ${pregnancyTest.toDateString()}`
+    };
+  },
+
+  // Time Zone Converter
+  'time-zone-converter': (payload: any) => {
+    const { time, fromTz, toTz } = payload;
+    if (!time || !fromTz || !toTz) return { Error: 'Please select a valid time and both timezones' };
+
+    try {
+      const today = new Date();
+      const [hours, minutes] = time.split(':');
+      const sourceDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), parseInt(hours), parseInt(minutes));
+
+      const d1 = new Date();
+      const tzFromStr = d1.toLocaleString('en-US', { timeZone: fromTz });
+      const tzToStr = d1.toLocaleString('en-US', { timeZone: toTz });
+      
+      const dFrom = new Date(tzFromStr);
+      const dTo = new Date(tzToStr);
+      const diffMs = dTo.getTime() - dFrom.getTime();
+
+      const targetTimeMs = sourceDate.getTime() + diffMs;
+      const targetDateObj = new Date(targetTimeMs);
+      
+      const displayTime = targetDateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+
+      return {
+        'Source Time': `${time} in ${fromTz}`,
+        'Converted Time': `${displayTime} in ${toTz}`,
+        'Time Difference': `${(diffMs / 3600000).toFixed(1)} Hours`
+      };
+    } catch (e: any) {
+      return { Error: 'Invalid time zone selection' };
+    }
   }
 };
