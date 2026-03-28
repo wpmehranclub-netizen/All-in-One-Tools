@@ -7,6 +7,9 @@ import UniversalInput from '@/components/UniversalInput';
 import UniversalOutput from '@/components/UniversalOutput';
 import CustomBasicCalculator from '@/components/CustomBasicCalculator';
 import CustomScientificCalculator from '@/components/CustomScientificCalculator';
+import CustomCurrencyConverter from '@/components/CustomCurrencyConverter';
+import CustomLoanEMICalculator from '@/components/CustomLoanEMICalculator';
+import CustomUnitConverter from '@/components/CustomUnitConverter';
 import Link from 'next/link';
 import { ArrowLeft, Zap, Box, Code } from 'lucide-react';
 import gsap from 'gsap';
@@ -122,6 +125,12 @@ export default function ToolPage({ params }: { params: Promise<{ slug: string }>
           <CustomBasicCalculator onSubmit={handleExecute} />
         ) : slug === 'scientific-calculator' ? (
           <CustomScientificCalculator onSubmit={handleExecute} />
+        ) : slug === 'currency-converter' ? (
+          <CustomCurrencyConverter onSubmit={handleExecute} />
+        ) : slug === 'loan-emi-calculator' ? (
+          <CustomLoanEMICalculator onSubmit={handleExecute} />
+        ) : slug === 'unit-converter' ? (
+          <CustomUnitConverter onSubmit={handleExecute} />
         ) : (
           <UniversalInput config={tool.config} onSubmit={handleExecute} isLoading={loadingExecute} />
         )}

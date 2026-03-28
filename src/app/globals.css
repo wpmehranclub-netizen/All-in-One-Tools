@@ -1,35 +1,35 @@
 @import "tailwindcss";
 
 :root {
-  /* Light Theme Overlay */
-  --color-bg: #F8FAFC;
-  --color-surface: #FFFFFF;
-  --color-elevated: #F1F5F9;
-  --color-border: #E5E7EB;
-  --color-primary: #2563EB;
-  --color-secondary: #4F46E5;
-  --color-accent: #0891B2;
-  --color-text-primary: #111827;
-  --color-text-secondary: #4B5563;
-  --color-success: #16A34A;
-  --color-error: #DC2626;
-  --color-warning: #D97706;
+  /* Ultra Clean Light Theme matching iLoveIMG */
+  --color-bg: #F8F9FA; /* Light gray background */
+  --color-surface: #FFFFFF; /* Pure white cards */
+  --color-elevated: #F1F3F5;
+  --color-border: #E9ECEF;
+  --color-primary: #1C7ED6; /* Clean blue */
+  --color-secondary: #0A192F; /* Dark heading text */
+  --color-accent: #339AF0;
+  --color-text-primary: #212529;
+  --color-text-secondary: #868E96;
+  --color-success: #40C057;
+  --color-error: #FA5252;
+  --color-warning: #FCC419;
 }
 
+/* Force light mode even if system is dark */
 .dark {
-  /* Dark Theme (Default) */
-  --color-bg: #0B0F14;
-  --color-surface: #111827;
-  --color-elevated: #1F2937;
-  --color-border: #2D3748;
-  --color-primary: #3B82F6;
-  --color-secondary: #8B5CF6;
-  --color-accent: #06B6D4;
-  --color-text-primary: #F9FAFB;
-  --color-text-secondary: #9CA3AF;
-  --color-success: #22C55E;
-  --color-error: #EF4444;
-  --color-warning: #F59E0B;
+  --color-bg: #F8F9FA;
+  --color-surface: #FFFFFF;
+  --color-elevated: #F1F3F5;
+  --color-border: #E9ECEF;
+  --color-primary: #1C7ED6;
+  --color-secondary: #0A192F;
+  --color-accent: #339AF0;
+  --color-text-primary: #212529;
+  --color-text-secondary: #868E96;
+  --color-success: #40C057;
+  --color-error: #FA5252;
+  --color-warning: #FCC419;
 }
 
 @theme inline {

@@ -31,34 +31,27 @@ export default async function Home() {
   const tools = await getTools();
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg)] flex flex-col items-center animate-fade-in text-[var(--color-text-primary)]">
+    <div className="min-h-screen bg-[var(--color-bg)] flex flex-col items-center animate-fade-in text-[var(--color-text-primary)] font-sans">
       {/* Hero Section */}
-      <section className="w-full py-40 px-4 relative flex flex-col items-center text-center overflow-hidden">
+      <section className="w-full pt-20 pb-16 px-4 flex flex-col items-center text-center">
         
-        {/* Dynamic Abstract Background Lines & Glows */}
-        <div className="absolute inset-0 pointer-events-none z-0">
-          <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-[var(--color-secondary)] opacity-[0.15] rounded-full blur-[120px]"></div>
-          <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-[var(--color-primary)] opacity-[0.1] rounded-full blur-[150px]"></div>
-          
-          <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[var(--color-border)] to-transparent"></div>
+        <h1 className="text-4xl md:text-[3.2rem] leading-tight font-extrabold text-[var(--color-secondary)] mb-4 tracking-tight">
+          Every tool you could want in one place
+        </h1>
+        <p className="text-lg md:text-xl text-[var(--color-text-secondary)] mb-10 max-w-2xl font-medium">
+          Your online Swiss Army Knife is here and forever free!
+        </p>
+        
+        {/* Category Pills */}
+        <div className="flex flex-wrap justify-center gap-3 mb-10 max-w-4xl">
+           <button className="px-6 py-2 rounded-full bg-[var(--color-secondary)] text-white text-sm font-semibold transition-transform hover:scale-105">All</button>
+           {['Text', 'Image', 'Health', 'Math', 'Finance'].map(cat => (
+             <button key={cat} className="px-6 py-2 rounded-full bg-white border border-[var(--color-border)] text-[var(--color-text-primary)] text-sm font-semibold hover:border-gray-300 hover:shadow-sm transition-all">{cat}</button>
+           ))}
         </div>
 
-        <div className="z-10 w-full max-w-5xl flex flex-col items-center relative">
-          <div className="glass-panel px-6 py-2.5 rounded-full inline-flex items-center space-x-3 mb-10 mx-auto shadow-2xl border border-[var(--color-border)] opacity-0 animate-[fade-in-up_1s_forwards]">
-            <Layers className="text-[var(--color-primary)] w-5 h-5" />
-            <span className="text-[var(--color-text-secondary)] font-medium tracking-widest uppercase text-xs">All-in-One Tools Platform</span>
-          </div>
-          
-          <h1 className="text-5xl md:text-8xl font-black text-[var(--color-text-primary)] mb-8 tracking-tighter opacity-0 animate-[fade-in-up_1s_0.2s_forwards]">
-            Execute With <span className="text-gradient">Precision</span>
-          </h1>
-          <p className="text-xl md:text-2xl text-[var(--color-text-secondary)] mb-16 max-w-3xl font-light opacity-0 animate-[fade-in-up_1s_0.4s_forwards]">
-            Over a thousand meticulously crafted developer, text, image, and utility tools running natively in a blazing-fast edge environment.
-          </p>
-          
-          <div className="w-full opacity-0 animate-[fade-in-up_1s_0.6s_forwards]">
-             <LiveSearch />
-          </div>
+        <div className="w-full max-w-2xl mx-auto">
+           <LiveSearch />
         </div>
       </section>
 

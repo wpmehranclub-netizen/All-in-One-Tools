@@ -333,5 +333,151 @@ export const clientHandlers: Record<string, (payload: any) => any> = {
     } catch (e: any) {
       return { Error: 'Invalid time zone selection' };
     }
+  },
+
+  // Loan EMI Calculator
+  'loan-emi-calculator': (payload: any) => {
+    const P = parseFloat(payload.principal);
+    const R = parseFloat(payload.interest) / 12 / 100;
+    const N = parseFloat(payload.tenure);
+
+    if (isNaN(P) || isNaN(R) || isNaN(N) || P <= 0 || N <= 0) {
+      return { 'Monthly EMI': '0.00', 'Total Interest': '0.00', 'Total Payment': '0.00' };
+    }
+
+    if (R === 0) {
+      return {
+        'Monthly EMI': `$${(P / N).toFixed(2)}`,
+        'Total Interest': '$0.00',
+        'Total Payment': `$${P.toFixed(2)}`,
+      };
+    }
+
+    const emi = (P * R * Math.pow(1 + R, N)) / (Math.pow(1 + R, N) - 1);
+    const totalPayment = emi * N;
+    const totalInterest = totalPayment - P;
+
+    return {
+      'Monthly EMI': `$${emi.toFixed(2)}`,
+      'Total Interest': `$${totalInterest.toFixed(2)}`,
+      'Total Amount': `$${totalPayment.toFixed(2)}`,
+    };
+  },
+
+  // Date Difference Calculator
+  'date-difference-calculator': (payload: any) => {
+    const start = new Date(payload.startDate);
+    const end = new Date(payload.endDate);
+    
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+      return { Error: 'Invalid dates provided.' };
+    }
+
+    const diffTime = Math.abs(end.getTime() - start.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    return {
+      'Total Days': `${diffDays} days`,
+      'Total Weeks': `${(diffDays / 7).toFixed(1)} weeks`,
+      'Total Months (Approx)': `${(diffDays / 30.417).toFixed(1)} months`,
+      'Total Years (Approx)': `${(diffDays / 365.25).toFixed(2)} years`
+    };
+  },
+
+  // Unit Converter
+  'unit-converter': (payload: any) => {
+    const val = parseFloat(payload.value);
+    const fromUnit = payload.fromUnit;
+    const toUnit = payload.toUnit;
+
+    if (isNaN(val)) return { Error: 'Valid number required for value.' };
+    
+    const lengthMap: any = {
+      'Meters': 1,
+      'Kilometers': 1000,
+      'Miles': 1609.34,
+      'Feet': 0.3048,
+    };
+    
+    const massMap: any = {
+      'Kilograms': 1,
+      'Pounds': 0.453592,
+    };
+
+    if (lengthMap[fromUnit] && lengthMap[toUnit]) {
+      const inMeters = val * lengthMap[fromUnit];
+      const result = inMeters / lengthMap[toUnit];
+      return { Result: `${val} ${fromUnit} = ${result.toFixed(4)} ${toUnit}` };
+    } else if (massMap[fromUnit] && massMap[toUnit]) {
+      const inKg = val * massMap[fromUnit];
+      const result = inKg / massMap[toUnit];
+      return { Result: `${val} ${fromUnit} = ${result.toFixed(4)} ${toUnit}` };
+    } else {
+      return { Error: `Cannot convert ${fromUnit} to ${toUnit}` };
+    }
+  },
+
+  // Calorie Calculator
+  'calorie-calculator': (payload: any) => {
+    const age = parseFloat(payload.age);
+    const weight = parseFloat(payload.weight);
+    const height = parseFloat(payload.height);
+    const gender = payload.gender; 
+    const activity = payload.activity;
+
+    if (isNaN(age) || isNaN(weight) || isNaN(height)) {
+       return { Error: 'Valid age, weight, and height are required.' };
+    }
+
+    let bmr = 0;
+    if (gender === 'Male') {
+      bmr = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age);
+    } else {
+      bmr = 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age);
+    }
+
+    let multiplier = 1.2;
+    if (activity === 'Lightly Active') multiplier = 1.375;
+    else if (activity === 'Active') multiplier = 1.55;
+    else if (activity === 'Very Active') multiplier = 1.725;
+
+    const tdee = bmr * multiplier;
+
+    return {
+      'Maintain Weight': `${Math.round(tdee)} calories/day`,
+      'Mild Weight Loss (~0.25 kg/wk)': `${Math.round(tdee - 250)} calories/day`,
+      'Weight Loss (~0.5 kg/wk)': `${Math.round(tdee - 500)} calories/day`,
+      'Extreme Weight Loss (~1 kg/wk)': `${Math.round(tdee - 1000)} calories/day`
+    };
+  },
+
+  // Ideal Weight Calculator
+  'ideal-weight-calculator': (payload: any) => {
+    const height = parseFloat(payload.height);
+    const gender = payload.gender;
+
+    if (isNaN(height) || height < 100) return { Error: 'Valid height > 100cm required.' };
+
+    let idealWeight = 0;
+    const heightInches = height / 2.54;
+    
+    if (gender === 'Male') {
+      idealWeight = 50 + 2.3 * (heightInches - 60);
+    } else {
+      idealWeight = 45.5 + 2.3 * (heightInches - 60);
+    }
+
+    let robinsonWeight = 0;
+    if (gender === 'Male') {
+      robinsonWeight = 52 + 1.9 * (heightInches - 60);
+    } else {
+      robinsonWeight = 49 + 1.7 * (heightInches - 60);
+    }
+
+    return {
+      'Devine Formula (Standard)': `${idealWeight.toFixed(1)} kg`,
+      'Robinson Formula': `${robinsonWeight.toFixed(1)} kg`,
+      'Healthy Range': `${((height/100)*(height/100)*18.5).toFixed(1)} - ${((height/100)*(height/100)*24.9).toFixed(1)} kg`
+    };
   }
 };
