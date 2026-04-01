@@ -15,13 +15,13 @@ import Link from 'next/link';
 import { ArrowLeft, Zap, Box, Code } from 'lucide-react';
 import gsap from 'gsap';
 import { clientHandlers } from '@/engine/clientHandlers';
+import { tools } from '@/config/toolsDB';
 
 export default function ToolPage({ params }: { params: Promise<{ slug: string }> }) {
   const unwrappedParams = use(params);
   const { slug } = unwrappedParams;
   
   const [tool, setTool] = useState<any>(null);
-  const [loadingConfig, setLoadingConfig] = useState(true);
   const [loadingExecute, setLoadingExecute] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
@@ -30,19 +30,15 @@ export default function ToolPage({ params }: { params: Promise<{ slug: string }>
     // Start animation without hardcoding opacity-0 in CSS class so React hydration doesn't fail
     gsap.from('.page-container', { opacity: 0, duration: 0.3, ease: 'power2.out' });
 
-    axios.get(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/tool/${slug}`)
-      .then(res => {
-        setTool(res.data.data);
-        setLoadingConfig(false);
-        setTimeout(() => {
-           gsap.from('.anim-slide-down', { opacity: 0, y: -20, duration: 0.6, stagger: 0.1, ease: 'power2.out' });
-        }, 50);
-      })
-      .catch(err => {
-        console.error(err);
-        setError('Tool execution nodes disconnected or backend offline.');
-        setLoadingConfig(false);
-      });
+    const foundTool = tools.find(t => t.slug === slug);
+    if (foundTool) {
+      setTool(foundTool);
+      setTimeout(() => {
+         gsap.from('.anim-slide-down', { opacity: 0, y: -20, duration: 0.6, stagger: 0.1, ease: 'power2.out' });
+      }, 50);
+    } else {
+      setError('Tool not found.');
+    }
   }, [slug]);
 
   const handleExecute = async (payload: any) => {
@@ -78,14 +74,6 @@ export default function ToolPage({ params }: { params: Promise<{ slug: string }>
       setLoadingExecute(false);
     }
   };
-
-  if (loadingConfig) {
-    return (
-      <div className="min-h-screen bg-[var(--color-bg)] flex items-center justify-center">
-        <div className="w-16 h-16 border-4 border-[var(--color-elevated)] border-t-[var(--color-primary)] rounded-full animate-spin"></div>
-      </div>
-    );
-  }
 
   if (error || !tool) {
     return (
