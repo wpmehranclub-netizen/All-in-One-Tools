@@ -10,6 +10,7 @@ import CustomScientificCalculator from '@/components/CustomScientificCalculator'
 import CustomCurrencyConverter from '@/components/CustomCurrencyConverter';
 import CustomLoanEMICalculator from '@/components/CustomLoanEMICalculator';
 import CustomUnitConverter from '@/components/CustomUnitConverter';
+import CustomAiMusic from '@/components/CustomAiMusic';
 import Link from 'next/link';
 import { ArrowLeft, Zap, Box, Code } from 'lucide-react';
 import gsap from 'gsap';
@@ -131,6 +132,8 @@ export default function ToolPage({ params }: { params: Promise<{ slug: string }>
           <CustomLoanEMICalculator onSubmit={handleExecute} />
         ) : slug === 'unit-converter' ? (
           <CustomUnitConverter onSubmit={handleExecute} />
+        ) : slug === 'ai-music' ? (
+          <CustomAiMusic onSubmit={handleExecute} isLoading={loadingExecute} />
         ) : (
           <UniversalInput config={tool.config} onSubmit={handleExecute} isLoading={loadingExecute} />
         )}

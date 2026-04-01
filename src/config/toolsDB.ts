@@ -6,7 +6,8 @@ export const categories = [
   { name: 'Math & Logic', slug: 'math' },
   { name: 'Finance & Money', slug: 'finance' },
   { name: 'Date & Time', slug: 'datetime' },
-  { name: 'Converters', slug: 'converters' }
+  { name: 'Converters', slug: 'converters' },
+  { name: 'AI Tools', slug: 'ai' }
 ];
 
 export const tools = [
@@ -261,6 +262,17 @@ export const tools = [
       ],
       output: { type: 'metrics_grid' },
       realtime: true
+    }
+  },
+  {
+    name: 'Ai Music',
+    slug: 'ai-music',
+    category_slug: 'ai',
+    config: {
+      // Custom UI will ignore these config lists, just needed for DB
+      inputs: [],
+      output: { type: 'custom' },
+      realtime: false
     }
   }
 ];
